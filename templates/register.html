@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #111827;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        header a {
+            color: #e5e7eb;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 0.9rem;
+        }
+        header a:hover {
+            text-decoration: underline;
+        }
+        main {
+            padding: 25px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        form {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: #e5e7eb;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        .flash {
+            background: #facc15;
+            color: #111827;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Game Store</h1>
+    <div>
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('cart') }}">Cart ({{ cart_count or 0 }})</a>
+        <a href="{{ url_for('login') }}">Login</a>
+    </div>
+</header>
+
+<main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <h2>Create an account</h2>
+    <form method="post" action="{{ url_for('register') }}">
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required>
+
+        <label for="user_type">Account type</label>
+        <select name="user_type" id="user_type">
+            <option value="buyer">Buyer (purchase games)</option>
+            <option value="seller">Seller (list and sell games)</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+</main>
+</body>
+</html>

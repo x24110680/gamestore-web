@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e5e7eb;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #111827;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        header a {
+            color: #e5e7eb;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 0.9rem;
+        }
+        header a:hover {
+            text-decoration: underline;
+        }
+        .user-label {
+            font-size: 0.85rem;
+            color: #d1d5db;
+            margin-right: 10px;
+        }
+        main {
+            padding: 25px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .flash {
+            background: #facc15;
+            color: #111827;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        form {
+            background: #1f2937;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #4b5563;
+            background: #111827;
+            color: #e5e7eb;
+        }
+        input[type="file"] {
+            padding: 6px;
+            background: #111827;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        img.preview {
+            max-width: 200px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        .btn-secondary {
+            background: #4b5563;
+            color: white;
+            margin-left: 8px;
+        }
+        .btn-secondary:hover {
+            background: #374151;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Edit Game</h1>
+    <div>
+        {% if user %}
+            <span class="user-label">Seller: {{ user["email"] }}</span>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+        <a href="{{ url_for('seller_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('index') }}">Store</a>
+        <a href="{{ url_for('cart') }}">Cart ({{ cart_count or 0 }})</a>
+    </div>
+</header>
+
+<main>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="post"
+          action="{{ url_for('seller_edit_game', game_id=game['id']) }}"
+          enctype="multipart/form-data">
+
+        <label for="title">Game title</label>
+        <input type="text" name="title" id="title" required value="{{ game['title'] }}">
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description">{{ game['description'] }}</textarea>
+
+        <label for="price">Price (EUR)</label>
+        <input type="number" step="0.01" name="price" id="price" required value="{{ '%.2f'|format(game['price']) }}">
+
+        {% if game['image_url'] %}
+            <label>Current Front Image</label>
+            <img class="preview" src="{{ game['image_url'] }}" alt="Current image">
+        {% endif %}
+
+        <label for="image_file">Upload New Image (optional)</label>
+        <input type="file" name="image_file" id="image_file" accept="image/*">
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('seller_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</main>
+</body>
+</html>

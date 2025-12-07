@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --bg-header: rgba(15, 23, 42, 0.95);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --accent: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, sans-serif;
+            color: var(--text-main);
+            background: radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mix-blend-mode: soft-light;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .page {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(16px);
+            background: linear-gradient(
+                to bottom,
+                var(--bg-header),
+                rgba(15, 23, 42, 0.7),
+                transparent
+            );
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--text-muted);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.9rem;
+        }
+
+        header a {
+            color: var(--text-main);
+            text-decoration: none;
+            position: relative;
+        }
+
+        header a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            height: 2px;
+            width: 0;
+            background: linear-gradient(to right, #38bdf8, #a855f7);
+            transition: width 0.18s ease-out;
+        }
+
+        header a:hover::after {
+            width: 100%;
+        }
+
+        .user-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        main {
+            padding: 30px 24px 40px 24px;
+        }
+
+        .section {
+            margin-bottom: 26px;
+        }
+
+        .heading-xl {
+            font-size: 1.7rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .heading-md {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .muted {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.92);
+            border-radius: 12px;
+            padding: 18px 18px 16px 18px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            box-shadow:
+                0 18px 40px rgba(15, 23, 42, 0.9),
+                0 0 0 1px rgba(15, 23, 42, 0.9);
+        }
+
+        .grid-two {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+            gap: 18px;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            color: var(--accent);
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        .list {
+            list-style: none;
+            padding-left: 0;
+            margin: 8px 0 0 0;
+            font-size: 0.95rem;
+        }
+
+        .list li + li {
+            margin-top: 4px;
+        }
+
+        .label {
+            font-weight: 600;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.5);
+            font-size: 0.8rem;
+            margin-right: 4px;
+            margin-top: 4px;
+        }
+
+        .pill-accent {
+            border-color: rgba(56, 189, 248, 0.7);
+            color: var(--accent);
+        }
+
+        a.link-muted {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a.link-muted:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 720px) {
+            .nav-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .grid-two {
+                grid-template-columns: 1fr;
+            }
+            main {
+                padding-inline: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="page nav-inner">
+        <div>
+            <div class="brand-title">Game Store</div>
+            <div class="brand-subtitle">About The Platform</div>
+        </div>
+        <div class="nav-right">
+            {% if user %}
+                <span class="user-label">
+                    Logged in as {{ user["email"] }} ({{ user["user_type"] }})
+                </span>
+                {% if user["user_type"] == "seller" %}
+                    <a href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
+                {% else %}
+                    <a href="{{ url_for('my_orders') }}">My Orders</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+            <a href="{{ url_for('cart') }}">Cart ({{ cart_count or 0 }})</a>
+            <a href="{{ url_for('index') }}">Store</a>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    <section class="section">
+        <div class="tagline">About us</div>
+        <h1 class="heading-xl">Your hub for digital games</h1>
+        <p class="muted">
+            Game Store is a demo digital marketplace where independent sellers can list their
+            games and players can safely browse, purchase, and build a personal library.
+            The project showcases a modern cloud-ready architecture built with Python, Flask,
+            and relational storage.
+        </p>
+    </section>
+
+    <section class="section grid-two">
+        <div class="card">
+            <h2 class="heading-md">What we focus on</h2>
+            <p class="muted">
+                This platform is designed to feel like a real game launcher and store:
+            </p>
+            <ul class="list">
+                <li>Buyer accounts to browse, add to cart, and purchase games.</li>
+                <li>Seller accounts with dashboards for listing and managing titles.</li>
+                <li>Secure order flow and a clean, sci-fi themed user interface.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="heading-md">Contact and support</h2>
+            <ul class="list">
+                <li>
+                    <span class="label">Support email:</span>
+                    <a class="link-muted" href="mailto:support@gamestore.com">
+                        support@gamestore-demo.com
+                    </a>
+                </li>
+                <li>
+                    <span class="label">Sales / partnership:</span>
+                    <a class="link-muted" href="mailto:partners@gamestore.com">
+                        partners@gamestore-demo.com
+                    </a>
+                </li>
+                <li>
+                    <span class="label">Contact number:</span>
+                    +353 01 234 5678
+                </li>
+                <li>
+                    <span class="label">Location :</span>
+                    Dublin, Ireland
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="section grid-two">
+        <div class="card">
+            <h2 class="heading-md">For players</h2>
+            <p class="muted">
+                Create a buyer account to:
+            </p>
+            <div>
+                <span class="pill pill-accent">Discover new titles</span>
+                <span class="pill">Secure checkout flow</span>
+                <span class="pill">Order history</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="heading-md">For sellers</h2>
+            <p class="muted">
+                Register as a seller to:
+            </p>
+            <div>
+                <span class="pill pill-accent">List games with cover art</span>
+                <span class="pill">Edit and manage catalog</span>
+                <span class="pill">View how listings appear to buyers</span>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>

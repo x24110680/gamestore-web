@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg-header: rgba(15, 23, 42, 0.96);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+            --accent: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, sans-serif;
+            color: var(--text-main);
+            background: radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+            background-size: 58px 58px;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .page {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: blur(14px);
+            background: var(--bg-header);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            color: var(--text-muted);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.9rem;
+        }
+
+        header a {
+            color: var(--text-main);
+            text-decoration: none;
+            position: relative;
+        }
+
+        header a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            height: 2px;
+            width: 0;
+            background: linear-gradient(to right, #38bdf8, #a855f7);
+            transition: width 0.18s ease-out;
+        }
+
+        header a:hover::after {
+            width: 100%;
+        }
+
+        .user-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        main {
+            padding: 28px 24px 40px 24px;
+        }
+
+        .flash {
+            background: #facc15;
+            color: #111827;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 18px;
+            border: 1px solid #fbbf24;
+        }
+
+        .top-actions {
+            margin-bottom: 14px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            border: 1px solid transparent;
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #38bdf8, #4f46e5);
+            color: white;
+            box-shadow:
+                0 0 12px rgba(56, 189, 248, 0.55),
+                0 0 0 1px rgba(15, 23, 42, 0.8) inset;
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(15, 23, 42, 0.96);
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #020617;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        tr:nth-child(odd) td {
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .actions-cell a,
+        .actions-cell button {
+            font-size: 0.8rem;
+        }
+
+        .link {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #f97373;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .no-games {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        @media (max-width: 720px) {
+            .nav-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            main {
+                padding-inline: 16px;
+            }
+            table {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="page nav-inner">
+        <div>
+            <div class="brand-title">Game Store</div>
+            <div class="brand-subtitle">Seller Dashboard</div>
+        </div>
+        <div class="nav-right">
+            {% if user %}
+                <span class="user-label">
+                    {{ user["email"] }} ({{ user["user_type"] }})
+                </span>
+                <a href="{{ url_for('seller_dashboard') }}">Seller Dashboard</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+            <a href="{{ url_for('cart') }}">Cart ({{ cart_count or 0 }})</a>
+            <a href="{{ url_for('about') }}">About</a>
+            <a href="{{ url_for('index') }}">Store</a>
+        </div>
+    </div>
+</header>
+
+<main class="page">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="flash">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="top-actions">
+        <a href="{{ url_for('seller_add_game') }}" class="btn btn-primary">
+            Add New Game
+        </a>
+    </div>
+
+    {% if games and games|length > 0 %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Price (EUR)</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for game in games %}
+                    <tr>
+                        <td>{{ game["id"] }}</td>
+                        <td>{{ game["title"] }}</td>
+                        <td>€{{ "%.2f"|format(game["price"]) }}</td>
+                        <td>{{ game["description"] }}</td>
+                        <td class="actions-cell">
+                            <a href="{{ url_for('seller_edit_game', game_id=game['id']) }}"
+                               class="link">
+                                Edit
+                            </a>
+                            |
+                            <form method="post"
+                                  action="{{ url_for('seller_delete_game', game_id=game['id']) }}"
+                                  style="display:inline"
+                                  onsubmit="return confirm('Are you sure you want to delete this game?');">
+                                <button type="submit" class="delete-btn">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="no-games">
+            You have not listed any games yet. Use "Add New Game" to create your first listing.
+        </p>
+    {% endif %}
+</main>
+</body>
+</html>
